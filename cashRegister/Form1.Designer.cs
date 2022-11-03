@@ -218,7 +218,7 @@
             this.receiptButton.Name = "receiptButton";
             this.receiptButton.Size = new System.Drawing.Size(213, 23);
             this.receiptButton.TabIndex = 15;
-            this.receiptButton.Text = "Imprimir Recivo";
+            this.receiptButton.Text = "Imprimir Recibo";
             this.receiptButton.UseVisualStyleBackColor = true;
             this.receiptButton.Click += new System.EventHandler(this.receiptButton_Click);
             // 

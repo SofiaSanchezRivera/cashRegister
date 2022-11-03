@@ -10,8 +10,10 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Media;
 using System.Linq.Expressions;
+using System.IO;
 
-//Sofia Sanchez Rivera, 4 October 2022
+//Sofia Sanchez Rivera
+//4 October 2022
 //Create a cash register of Dunkin Donuts
 
 namespace cashRegister
@@ -36,10 +38,64 @@ namespace cashRegister
         double tax = 0;
         double tenderedAmount = 0;
         double change = 0;
+
         public Form1()
         {
             InitializeComponent();
         }
+
+        //Procedure that records receipt data into a file
+        private void recordReceiptsToFile()
+        {
+            //declare path: directory and file
+            string directory = "C:\\Receipts";
+            string file = "Receipts.txt";
+            string path = directory + "\\" + file;
+
+            //declare file header
+            string header1 = "Nº PEDIDO FECHA_HORA         CAFÉS DONUTS GALLETAS SUBTOTAL TAX        TOTAL      LICITADO CAMBIO";
+            string header2 = "--------- ------------------ ----- ------ -------- -------- ---------- ---------- -------- ----------";
+
+            //create the directory if does not exist
+            if (Directory.Exists(directory))
+            { 
+                //the directory already exists
+            }
+            else
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            //create file if does not exist
+            if (File.Exists(path))
+            { 
+                //the file already exists
+            }
+            else
+            {
+                //create file
+                using (StreamWriter sw = File.CreateText(path)) ;
+                //File.CreateText(path);
+                //File.OpenWrite(path);
+
+                //insert headers
+                //File.AppendAllText(path, header1 + "\r\n");
+                //File.AppendAllText(path, header2 + "\r\n");
+                sw.WriteLine(path, header1);
+                File.WriteLine(path, header2);
+            }
+
+            //format receipt inputs
+            coffeeInput.Text = coffeeInput.Text.PadLeft(5, ' ');
+            donutsInput.Text = donutsInput.Text.PadLeft(6, ' ');
+            cookiesInput.Text = cookiesInput.Text.PadLeft(8, ' ');
+            
+
+            //record receipt inputs into the file
+            string Text = " 24178492" + " " + DateTime.Now + " " + coffeeInput.Text + " " + donutsInput.Text + " " + cookiesInput.Text + "\r\n";
+            File.AppendAllText(path, Text);
+        }
+
         private void receiptButton_Click(object sender, EventArgs e)
         {
             try
@@ -52,10 +108,13 @@ namespace cashRegister
                 titlereceiptLabel.Text = $"DUNKIN DONUTS";
                 Refresh();
                 Thread.Sleep(500);
+
                 receiptLabel.Text += $"\n\n               Número de pedido 24178494";
                 Refresh();
                 Thread.Sleep(500);
-                receiptLabel.Text += $"\n                          Octubre 4, 2022\n";
+
+                //receiptLabel.Text += $"\n                          Octubre 4, 2022\n";
+                receiptLabel.Text += $"\n                       "+ DateTime.Now + "\n";
                 Refresh();
                 Thread.Sleep(500);
 
@@ -83,21 +142,29 @@ namespace cashRegister
                 receiptLabel.Text += $"\n\n   SubTotal                                              {subTotal.ToString("c")}";
                 Refresh();
                 Thread.Sleep(500);
+
                 receiptLabel.Text += $"\n   Tax                                                        {tax.ToString("c")}";
                 Refresh();
                 Thread.Sleep(500);
+
                 receiptLabel.Text += $"\n   Coste total                                           {totalCost.ToString("c")}";
                 Refresh();
                 Thread.Sleep(500);
+
                 receiptLabel.Text += $"\n\n   Licitado                                             {tenderedAmount.ToString("c")}";
                 Refresh();
                 Thread.Sleep(500);
+
                 receiptLabel.Text += $"\n\n   Cambio                                                {change.ToString("c")}";
                 Refresh();
                 Thread.Sleep(500);
+
                 receiptLabel.Text += $"\n\n\n\n\n\n\n           ¡Muchas gracias por su compra!";
                 Refresh();
                 Thread.Sleep(500);
+
+                //invocation of the procedure for saving receipt records to the file
+                recordReceiptsToFile();
 
                 neworderbutton.Enabled = true;
             }
@@ -105,10 +172,13 @@ namespace cashRegister
             {
                 //error handling
                 error.Play();
+
                 receiptLabel.BackColor = Color.Red;
                 receiptLabel.Text = $"Error";
+
                 Refresh();
                 Thread.Sleep(1000);
+
                 receiptLabel.BackColor = Color.White;
                 receiptLabel.Text = "";
             }
@@ -134,24 +204,36 @@ namespace cashRegister
                 {
                     //error handling
                     error.Play();
+
                     receiptLabel.BackColor = Color.Red;
                     receiptLabel.Text = "Insuficiente cantidad de dinero";
+
                     Refresh();
                     Thread.Sleep(1000);
+
                     receiptLabel.BackColor = Color.White;
                     receiptLabel.Text = "";
+
+                    //clear input
+                    tenderedInput.Text = "";
                 }
             }
             catch 
             {
                 //error handling
                 error.Play();
+
                 receiptLabel.BackColor = Color.Red;
                 receiptLabel.Text = $"Error";
+
                 Refresh();
                 Thread.Sleep(1000);
+
                 receiptLabel.BackColor = Color.White;
                 receiptLabel.Text = "";
+
+                //clear input
+                tenderedInput.Text = "";
             }
         }
 
@@ -160,8 +242,10 @@ namespace cashRegister
             try
             {
                 cash.Play();
+
                 //receiptButton.Enabled = true;
                 changebutton.Enabled = true;
+
                 coffeeAmount = Convert.ToDouble(coffeeInput.Text);
                 donutAmount = Convert.ToDouble(donutsInput.Text);
                 cookieAmount = Convert.ToDouble(cookiesInput.Text);
@@ -180,12 +264,20 @@ namespace cashRegister
             {
                 //error handling
                 error.Play();
+
                 receiptLabel.BackColor = Color.Red;
                 receiptLabel.Text = $"Error";
+
                 Refresh();
                 Thread.Sleep(1000);
+
                 receiptLabel.BackColor = Color.White;
                 receiptLabel.Text = "";
+
+                //clean inputs
+                coffeeInput.Text = "";
+                donutsInput.Text = "";
+                cookiesInput.Text = "";
             }
         }
 
@@ -194,6 +286,7 @@ namespace cashRegister
             try
             {
                 neworder.Play();
+
                 changebutton.Enabled = false;
                 neworderbutton.Enabled = false;
                 receiptButton.Enabled = false;
@@ -214,10 +307,13 @@ namespace cashRegister
             {
                 //error handling
                 error.Play();
+
                 receiptLabel.BackColor = Color.Red;
                 receiptLabel.Text = $"Error";
+
                 Refresh();
                 Thread.Sleep(1000);
+
                 receiptLabel.BackColor = Color.White;
                 receiptLabel.Text = "";
             }
