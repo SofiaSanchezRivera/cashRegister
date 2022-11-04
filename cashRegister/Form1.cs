@@ -15,6 +15,7 @@ using System.IO;
 //Sofia Sanchez Rivera
 //4 October 2022
 //Create a cash register of Dunkin Donuts
+//CashRegister v2.0
 
 namespace cashRegister
 {
