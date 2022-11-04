@@ -134,18 +134,28 @@ namespace cashRegister
             string myCoffeeInput = "";
             string myDonutsInput = "";
             string myCookiesInput = "";
+            string mysubTotalOutput = "";
+            string mytaxOutput = "";
+            string mytotalOutput = "";
+            string mytenderedInput = "";
+            string mychangeOutput= "";
 
             // Format data imputs
             myCoffeeInput = coffeeInput.Text.PadLeft(5, ' ');
             myDonutsInput = donutsInput.Text.PadLeft(6, ' ');
-            myCookiesInput = cookiesInput.Text.PadLeft(8, ' ');
+            myCookiesInput = cookiesInput.Text.PadLeft(7, ' ');
+            mysubTotalOutput = subTotalOutput.Text.PadLeft(8, ' ');
+            mytaxOutput = taxOutput.Text.PadLeft(10, ' ');
+            mytotalOutput = totalOutput.Text.PadLeft(10, ' ');
+            mytenderedInput = tenderedInput.Text.PadLeft(8, ' ');
+            mychangeOutput = changeOutput.Text.PadLeft(10, ' ');
 
             // Get and format order number
             numberReceiptString = myOrderNumberControl("OrderNumber.txt", "C:\\OrderNumber");
             numberReceiptString = numberReceiptString.PadLeft(9, ' ');
-            
+
             // Create the receipt line to insert into the receipts file
-            string Text = numberReceiptString + " " + DateTime.Now + " " + myCoffeeInput + " " + myDonutsInput + " " + myCookiesInput;
+            string Text = numberReceiptString + " " + DateTime.Now + " " + myCoffeeInput + " " + myDonutsInput + " " + myCookiesInput + " " + mysubTotalOutput + " " + mytaxOutput + " " + mytotalOutput + " " + mytenderedInput + " " + mychangeOutput;
 
             // If do not exists the directory we need to create first
             if (!Directory.Exists(directory))
