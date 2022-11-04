@@ -20,7 +20,7 @@ namespace cashRegister
 {
     public partial class Form1 : Form
     {
-        //create global variables
+        // Create global variables
         SoundPlayer printer = new SoundPlayer(Properties.Resources.Printer);
         SoundPlayer error =new SoundPlayer(Properties.Resources.Error);
         SoundPlayer cash =new SoundPlayer(Properties.Resources.Cash);
@@ -44,56 +44,132 @@ namespace cashRegister
             InitializeComponent();
         }
 
-        //Procedure that records receipt data into a file
-        private void recordReceiptsToFile()
+        // Funtionality to manage the order number increasing receipt by receipt
+        // To invoke the function uses: orderNumberString = orderNumberControl("OrderNumber.txt", "C:\\OrderNumber");
+
+        // Declare order number counter
+        int orderNumber = 0;
+        string orderNumberString = "0";
+
+        // Procedure order number control record, recording in a text file
+        private static void orderNumberControlRecord(string orderNumberString, string filePath)
         {
-            //declare path: directory and file
-            string directory = "C:\\Receipts";
-            string file = "Receipts.txt";
-            string path = directory + "\\" + file;
-
-            //declare file header
-            string header1 = "Nº PEDIDO FECHA_HORA         CAFÉS DONUTS GALLETAS SUBTOTAL TAX        TOTAL      LICITADO CAMBIO";
-            string header2 = "--------- ------------------ ----- ------ -------- -------- ---------- ---------- -------- ----------";
-
-            //create the directory if does not exist
-            if (Directory.Exists(directory))
-            { 
-                //the directory already exists
-            }
-            else
+            // Create the file to write the order number 
+            using (StreamWriter sw = File.CreateText(filePath))
             {
+                // Write the order number
+                sw.WriteLine(orderNumberString);
+                // Close the text file
+                sw.Close();
+            }
+        }
+
+        // Function order number control read, reading from a text file and return the order number value
+        private static string orderNumberControlRead(string filePath)
+        {
+            // Read from the file the order number 
+            using (StreamReader sr = new StreamReader(filePath))
+            {
+                // Read the order number
+                return sr.ReadLine();
+            }
+        }
+
+        // Function order number control
+        private static string myOrderNumberControl(string fileOrderNumber, string directoryOrderNumber)
+
+        {
+            string pathFileOrderNumber = directoryOrderNumber + "\\" + fileOrderNumber;
+            int orderNumberNext = 0;
+            string orderNumberNextString = "0";
+
+            // If don´t exists the directory we need to create first
+            if (!Directory.Exists(directoryOrderNumber))
+            {
+                // Create the directory where we will put the receips file
+                Directory.CreateDirectory(directoryOrderNumber);
+            }
+
+            // If don´t exists the file we need to create and the order number will be increase
+            if (!File.Exists(pathFileOrderNumber))
+            {
+                // Increase order number
+                orderNumberNext = orderNumberNext + 1;
+                // Invoke the procedure to create the file to write the order number
+                orderNumberControlRecord(orderNumberNext.ToString(), pathFileOrderNumber);
+                // Return the function value
+                return orderNumberNext.ToString();
+            }
+            else // The file exists
+            {
+                // Order number will be the next to the value in the file 
+                // Read order number from the file and increase
+                orderNumberNextString = orderNumberControlRead(pathFileOrderNumber);
+                orderNumberNext = Int32.Parse(orderNumberNextString) + 1;
+                orderNumberNextString = orderNumberNext.ToString();
+                // Record the new order number into the file
+                orderNumberControlRecord(orderNumberNextString, pathFileOrderNumber);
+                // Return the function value
+                return orderNumberNextString;
+            }
+        }
+
+        // Funtionality to record the receipt into a text file to contability control
+        // To invoke the procedure uses: recordReceipt();
+
+        // Procedure that record the registers of information in a text file C:\Receipts\Receipts.txt
+        private void recordReceipt()
+        {
+            // Declare path: directory and file 
+            string directory = "C:\\Receipts";
+            string txtReceiptsFile = "Receipts.txt";
+            string path = directory + "\\" + txtReceiptsFile;
+            // Declare heads of receipts file
+            string headReceipts1 = "Nº PEDIDO FECHA_HORA         CAFÉS DONUTS GALLETAS SUBTOTAL TAX        TOTAL      LICITADO CAMBIO";
+            string headReceipts2 = "--------- ------------------ ----- ------ -------- -------- ---------- ---------- -------- ----------";
+            // Declare receipt number
+            string numberReceiptString = "";
+
+            string myCoffeeInput = "";
+            string myDonutsInput = "";
+            string myCookiesInput = "";
+
+            // Format data imputs
+            myCoffeeInput = coffeeInput.Text.PadLeft(5, ' ');
+            myDonutsInput = donutsInput.Text.PadLeft(6, ' ');
+            myCookiesInput = cookiesInput.Text.PadLeft(8, ' ');
+            // Get and format order number
+            numberReceiptString = myOrderNumberControl("OrderNumber.txt", "C:\\OrderNumber");
+            numberReceiptString = numberReceiptString.PadLeft(9, ' ');
+            
+            // Create the receipt line to insert into the receipts file
+            string Text = numberReceiptString + " " + DateTime.Now + " " + myCoffeeInput + " " + myDonutsInput + " " + myCookiesInput;
+
+            // If do not exists the directory we need to create first
+            if (!Directory.Exists(directory))
+            {
+                // Create the directory where we will put the receipts file
                 Directory.CreateDirectory(directory);
             }
 
-            //create file if does not exist
-            if (File.Exists(path))
-            { 
-                //the file already exists
-            }
-            else
+            // If don´t exists the file we need to create first
+            if (!File.Exists(path))
             {
-                //create file
-                using (StreamWriter sw = File.CreateText(path)) ;
-                //File.CreateText(path);
-                //File.OpenWrite(path);
-
-                //insert headers
-                //File.AppendAllText(path, header1 + "\r\n");
-                //File.AppendAllText(path, header2 + "\r\n");
-                sw.WriteLine(path, header1);
-                File.WriteLine(path, header2);
+                // Create the file to write to
+                using (StreamWriter sw = File.CreateText(path))
+                {
+                    // Write the heads of the file, and the receipt and close file
+                    sw.WriteLine(headReceipts1);
+                    sw.WriteLine(headReceipts2);
+                    sw.WriteLine(Text);
+                    sw.Close();
+                }
             }
-
-            //format receipt inputs
-            coffeeInput.Text = coffeeInput.Text.PadLeft(5, ' ');
-            donutsInput.Text = donutsInput.Text.PadLeft(6, ' ');
-            cookiesInput.Text = cookiesInput.Text.PadLeft(8, ' ');
-            
-
-            //record receipt inputs into the file
-            string Text = " 24178492" + " " + DateTime.Now + " " + coffeeInput.Text + " " + donutsInput.Text + " " + cookiesInput.Text + "\r\n";
-            File.AppendAllText(path, Text);
+            else // The file exists
+            {
+                // Open text file, add the receipt and close the file
+                File.AppendAllLines(path, new String[] { Text });
+            }
         }
 
         private void receiptButton_Click(object sender, EventArgs e)
@@ -104,16 +180,16 @@ namespace cashRegister
 
                 printer.Play();
 
-                //prints items to the receipt
+                // Prints items to the receipt
                 titlereceiptLabel.Text = $"DUNKIN DONUTS";
                 Refresh();
                 Thread.Sleep(500);
 
-                receiptLabel.Text += $"\n\n               Número de pedido 24178494";
+                orderNumberString = orderNumberControlRead("C:\\OrderNumber\\OrderNumber.txt");
+                receiptLabel.Text += $"\n\n                        Número de pedido " + orderNumberString;
                 Refresh();
                 Thread.Sleep(500);
 
-                //receiptLabel.Text += $"\n                          Octubre 4, 2022\n";
                 receiptLabel.Text += $"\n                       "+ DateTime.Now + "\n";
                 Refresh();
                 Thread.Sleep(500);
@@ -163,14 +239,14 @@ namespace cashRegister
                 Refresh();
                 Thread.Sleep(500);
 
-                //invocation of the procedure for saving receipt records to the file
-                recordReceiptsToFile();
+                // Invoke record receipt into text file
+                recordReceipt();
 
                 neworderbutton.Enabled = true;
             }
             catch 
             {
-                //error handling
+                // Error handling
                 error.Play();
 
                 receiptLabel.BackColor = Color.Red;
@@ -194,7 +270,7 @@ namespace cashRegister
                 {
                     cash.Play();
 
-                    //Calculate the change
+                    // Calculate the change
                     change = tenderedAmount - totalCost;
                     changeOutput.Text = $"{change.ToString("c")}";
 
@@ -202,7 +278,7 @@ namespace cashRegister
                 }
                 else
                 {
-                    //error handling
+                    // Error handling
                     error.Play();
 
                     receiptLabel.BackColor = Color.Red;
@@ -214,25 +290,25 @@ namespace cashRegister
                     receiptLabel.BackColor = Color.White;
                     receiptLabel.Text = "";
 
-                    //clear input
+                    // Clear input
                     tenderedInput.Text = "";
                 }
             }
             catch 
             {
-                //error handling
+                // Error handling
                 error.Play();
 
                 receiptLabel.BackColor = Color.Red;
                 receiptLabel.Text = $"Error";
 
-                Refresh();
+                Refresh(); 
                 Thread.Sleep(1000);
 
                 receiptLabel.BackColor = Color.White;
                 receiptLabel.Text = "";
 
-                //clear input
+                // Clear input
                 tenderedInput.Text = "";
             }
         }
@@ -243,26 +319,26 @@ namespace cashRegister
             {
                 cash.Play();
 
-                //receiptButton.Enabled = true;
+                // ReceiptButton.Enabled = true;
                 changebutton.Enabled = true;
 
                 coffeeAmount = Convert.ToDouble(coffeeInput.Text);
                 donutAmount = Convert.ToDouble(donutsInput.Text);
                 cookieAmount = Convert.ToDouble(cookiesInput.Text);
 
-                //do calculations
+                // Do calculations
                 subTotal = coffeeAmount * coffeePrice + donutAmount * donutPrice + cookieAmount * cookiePrice;
                 tax = subTotal * taxRate;
                 totalCost = subTotal + tax;
 
-                //show outputs
+                // Show outputs
                 subTotalOutput.Text = $"{subTotal.ToString("c")}";
                 taxOutput.Text = $"{tax.ToString("c")}";
                 totalOutput.Text = $"{totalCost.ToString("c")}";
             }
             catch
             {
-                //error handling
+                // Error handling
                 error.Play();
 
                 receiptLabel.BackColor = Color.Red;
@@ -274,7 +350,7 @@ namespace cashRegister
                 receiptLabel.BackColor = Color.White;
                 receiptLabel.Text = "";
 
-                //clean inputs
+                // Clean inputs
                 coffeeInput.Text = "";
                 donutsInput.Text = "";
                 cookiesInput.Text = "";
@@ -291,7 +367,7 @@ namespace cashRegister
                 neworderbutton.Enabled = false;
                 receiptButton.Enabled = false;
 
-                //clear the labels
+                // Clear the labels
                 subTotalOutput.Text = "";
                 taxOutput.Text = "";
                 totalOutput.Text = "";
@@ -305,7 +381,7 @@ namespace cashRegister
             }
             catch
             {
-                //error handling
+                // Error handling
                 error.Play();
 
                 receiptLabel.BackColor = Color.Red;
