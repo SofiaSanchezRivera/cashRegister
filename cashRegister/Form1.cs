@@ -20,6 +20,7 @@ namespace cashRegister
 {
     public partial class Form1 : Form
     {
+
         // Create global variables
         SoundPlayer printer = new SoundPlayer(Properties.Resources.Printer);
         SoundPlayer error =new SoundPlayer(Properties.Resources.Error);
@@ -138,6 +139,7 @@ namespace cashRegister
             myCoffeeInput = coffeeInput.Text.PadLeft(5, ' ');
             myDonutsInput = donutsInput.Text.PadLeft(6, ' ');
             myCookiesInput = cookiesInput.Text.PadLeft(8, ' ');
+
             // Get and format order number
             numberReceiptString = myOrderNumberControl("OrderNumber.txt", "C:\\OrderNumber");
             numberReceiptString = numberReceiptString.PadLeft(9, ' ');
@@ -179,6 +181,9 @@ namespace cashRegister
                 neworderbutton.Enabled = true;
 
                 printer.Play();
+
+                // Invoke record receipt into text file
+                recordReceipt();
 
                 // Prints items to the receipt
                 titlereceiptLabel.Text = $"DUNKIN DONUTS";
@@ -238,9 +243,6 @@ namespace cashRegister
                 receiptLabel.Text += $"\n\n\n\n\n\n\n           ¡Muchas gracias por su compra!";
                 Refresh();
                 Thread.Sleep(500);
-
-                // Invoke record receipt into text file
-                recordReceipt();
 
                 neworderbutton.Enabled = true;
             }
