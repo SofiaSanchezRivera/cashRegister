@@ -143,7 +143,7 @@ namespace cashRegister
             // Format data imputs
             myCoffeeInput = coffeeInput.Text.PadLeft(5, ' ');
             myDonutsInput = donutsInput.Text.PadLeft(6, ' ');
-            myCookiesInput = cookiesInput.Text.PadLeft(7, ' ');
+            myCookiesInput = cookiesInput.Text.PadLeft(8, ' ');
             mysubTotalOutput = subTotalOutput.Text.PadLeft(8, ' ');
             mytaxOutput = taxOutput.Text.PadLeft(10, ' ');
             mytotalOutput = totalOutput.Text.PadLeft(10, ' ');
@@ -242,7 +242,7 @@ namespace cashRegister
                 Refresh();
                 Thread.Sleep(500);
 
-                receiptLabel.Text += $"\n\n   Licitado                                             {tenderedAmount.ToString("c")}";
+                receiptLabel.Text += $"\n\n   Licitado                                              {tenderedAmount.ToString("c")}";
                 Refresh();
                 Thread.Sleep(500);
 
